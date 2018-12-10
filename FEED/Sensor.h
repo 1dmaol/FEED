@@ -20,10 +20,13 @@ class Sensor {
     Sensor(SFE_BMP180);
     Sensor();
     void mostrar();
+    void mostrarIluminacion();
     void mostrar(char, double);
     void leerInterruptor();
     void leerPresion();
     void leer();
+    void leerTemperatura();
+    void convertirPorcentaje();
 };
 
 #endif

@@ -19,16 +19,16 @@ Sensor::Sensor(int _pin, double _max_valor, double _min_valor, double _power_pin
   value = 0;
 }
 
-
-
 Sensor::Sensor(SFE_BMP180 _bmp180){
   bmp180 = _bmp180;
+}
+
+Sensor::Sensor(){
 }
 
 // ========METODOS========
 
 void Sensor::leerInterruptor() {
-
  digitalWrite( power_pin, HIGH ); // Activamos el sensor // @suppress("Invalid arguments")
  delay(100); // Esperamos para la lectura
  int lectura = ads1115.readADC_SingleEnded(pin); // @suppress("Invalid arguments")
@@ -56,12 +56,24 @@ void Sensor::leerPresion() {
       }
     }
 }
+void Sensor::leerTemperatura(){
+  float a=0.76;
+  float b=0.036;
+  float c=0;
+  float d=8000;
+  leer();
+  value=(value-c-(d*a))/(d*b);
+  Serial.print("Temperatura de la prueba: "); Serial.print(value); Serial.println(" C");
+}
 
 void Sensor::leer() {
-  int lectura = ads1115.readADC_SingleEnded(pin); // @suppress("Invalid arguments")
-  value = 100 * min_valor / (min_valor - max_valor)
-      - lectura * 100 / (min_valor - max_valor);
+  value = ads1115.readADC_SingleEnded(pin); // @suppress("Invalid arguments")
+  Serial.print("Lectura de la prueba: "); Serial.println(value);
 }
+void Sensor::convertirPorcentaje(){
+  value = 100 * min_valor / (min_valor - max_valor) - value*100 / (min_valor - max_valor);
+}
+
 void Sensor::mostrar(char status, double p0) {
   if (value > 100)
     value = 100;
@@ -76,7 +88,22 @@ void Sensor::mostrar() {
     value = 100;
   if (value < 0)
     value = 0;
-  Serial.print("La lectura: ");
+  Serial.print(" - Porcentaje: ");
   Serial.print(value);
   Serial.println(" %");
+}
+
+void Sensor::mostrarIluminacion() {
+ if (value>=0 && value<5  ){
+    Serial.println("Esta oscuro");
+  }
+  else if (value>=5 && value<50){
+    Serial.println("Dia nublado");
+  }
+  else if (value>=50 && value<85){
+    Serial.println("Dia soleado");
+  }
+  else if (value>=85 && value<=100){
+    Serial.println("Dia muy soleado");
+  }
 }
